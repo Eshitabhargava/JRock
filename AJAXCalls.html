@@ -88,21 +88,22 @@ if(onFailure) onFailure();
 }
 }
 };
+  
 if(json["data"])
 {
 let jsonData=json["data"];
 let queryString="";
-let qsName;
-let qsValue;
+let queryStringName;
+let queryStringValue;
 let i=0;
-for(prop in jsonData)
+for(elem in jsonData)
 {
 if(i==0) queryString="?";
 if(i>0) queryString+="&";
 i++;
-qsName=encodeURI(prop);
-qsValue=encodeURI(jsonData[prop]);
-queryString=queryString+qsName+"="+qsValue;
+queryStringName=encodeURI(elem);
+queryStringValue=encodeURI(jsonData[elem]);
+queryString=queryString+queryStringName+"="+queryStringValue;
 }
 url+=queryString;
 }
@@ -126,15 +127,43 @@ else
 if(onFailure) onFailure();
 }
 }
-}; //POST method type part ends here
+}; 
 let jsonData={};
+let sendJSON=json["sendJSON"];
+if(!sendJSON) sendJSON=false;
+if((typeof sendJSON)!="boolean") throw "sendJSON Property should be of type boolean, in call to Ajax."
+let queryString="";
 if(json["data"])
+{
+if(sendJSON)
 {
 jsonData=json["data"];
 }
+else
+{
+queryString="";
+let queryStringName;
+let queryStringValue;
+let i=0;
+for(elem in jsonData)
+{
+if(i>0) queryString+="&";
+i++;
+queryStringName=encodeURI(elem);
+queryStringValue=encodeURI(jsonData[elem]);
+queryString=queryString+queryStringName+"="+queryStringValue;
+}
+}
 xmlHttpRequest.open('POST',url,true);
+if(sendJSON)
+{
 xmlHttpRequest.setRequestHeader("Content-Type","application/json");
 xmlHttpRequest.send(JSON.stringify(jsonData));
+}
+else
+{
+xmlHttpRequest.send(queryString);
+}
 }
 }
 </script>
